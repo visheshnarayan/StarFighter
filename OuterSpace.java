@@ -48,10 +48,11 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		setBackground(Color.black);
 		ship = new Ship();
 		keys = Stream.of(new Object[][] {
-			{ "W", false }, 
-			{ "Z", false }, 
-			{ "I", false }, 
-			{ "M", false }, 
+			{ "LEFT", false }, 
+			{ "RIGHT", false }, 
+			{ "UP", false }, 
+			{ "DOWN", false }, 
+			{ "SPACE", false }, 
 		}).collect(Collectors.toMap(data -> (String) data[0], data -> (Boolean) data[1]));
 		this.addKeyListener(this);
 		new Thread(this).start();
@@ -87,10 +88,10 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		graphToBack.setColor(Color.BLACK);
 		graphToBack.fillRect(0,0,800,600);
 
-		if (keys[0] == true) {
+		if (keys.get("LEFT")) {
 			ship.move("LEFT");
 		}
-		if (keys[1] == true) {
+		if (keys.get("RIGHT")) {
 			ship.move("RIGHT");
 		}
 		//add code to move Ship, Alien, etc.
@@ -102,73 +103,60 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	/**
 	 * keyPressed: detects key press for changing key array
 	 */
-	public void keyPressed(KeyEvent e)
-	{
-		if (e.getKeyCode() == KeyEvent.VK_LEFT)
-		{
-			keys[0] = true;
+	public void keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			keys.replace("LEFT", true);
 		}
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-		{
-			keys[1] = true;
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			keys.replace("RIGHT", true);
 		}
-		if (e.getKeyCode() == KeyEvent.VK_UP)
-		{
-			keys[2] = true;
+		if (e.getKeyCode() == KeyEvent.VK_UP) {
+			keys.replace("UP", true);
 		}
-		if (e.getKeyCode() == KeyEvent.VK_DOWN)
-		{
-			keys[3] = true;
+		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+			keys.replace("DOWN", true);
 		}
-		if (e.getKeyCode() == KeyEvent.VK_SPACE)
-		{
-			keys[4] = true;
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+			keys.replace("SPACE", true);
 		}
 		repaint();
 	}
 
 	public void keyReleased(KeyEvent e)
 	{
-		if (e.getKeyCode() == KeyEvent.VK_LEFT)
-		{
-			keys[0] = false;
+		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			keys.replace("LEFT", false);
 		}
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-		{
-			keys[1] = false;
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			keys.replace("RIGHT", false);
 		}
-		if (e.getKeyCode() == KeyEvent.VK_UP)
-		{
-			keys[2] = false;
+		if (e.getKeyCode() == KeyEvent.VK_UP) {
+			keys.replace("UP", false);
 		}
-		if (e.getKeyCode() == KeyEvent.VK_DOWN)
-		{
-			keys[3] = false;
+		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+			keys.replace("DOWN", false);
 		}
-		if (e.getKeyCode() == KeyEvent.VK_SPACE)
-		{
-			keys[4] = false;
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+			keys.replace("SPACE", false);
 		}
 		repaint();
 	}
 
-	public void keyTyped(KeyEvent e)
-	{
-      //no code needed here
-	}
+	/**
+	 * keyTyped: needed for implementation
+	 */
+	public void keyTyped(KeyEvent e) {}
 
-   public void run()
-   {
-   	try
-   	{
-   		while(true)
-   		{
-   		   Thread.currentThread().sleep(5);
-            repaint();
-         }
-      }catch(Exception e)
-      {
-      }
+	/**
+	 * run: runs animation
+	 */
+    public void run() {
+   		try {
+   			while(true) {
+   				Thread.currentThread().sleep(5);
+            	repaint();
+         	}
+      	} catch(Exception e) {}
   	}
 }
 
