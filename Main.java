@@ -8,9 +8,6 @@
  * For running game
  * -----------------------------------------------------------
  */
-import java.io.*;
-import java.util.*;
-import static java.lang.System.*;
 
 public class Main {
     public static void main( String args[] ) {
@@ -24,5 +21,7 @@ public class Main {
         test3.setX(3);
         test3.setY(5);
         System.out.println("Ship 3 " + test2);
+
+        new StarFighter();
     }
 }

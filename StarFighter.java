@@ -10,7 +10,6 @@
  */
 import javax.swing.JFrame;
 import java.awt.Component;
-import java.awt.Graphics;
 
 public class StarFighter extends JFrame {
 	public static int WIDTH = 800;
@@ -30,6 +29,6 @@ public class StarFighter extends JFrame {
 	}
 
 	public static void main( String args[] ) {
-		StarFighter run = new StarFighter();
+		new StarFighter();
 	}
 }

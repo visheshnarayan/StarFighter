@@ -8,9 +8,6 @@
  * Creates ShipTest class for testing Ship class
  * -----------------------------------------------------------
  */
-import java.io.*;
-import java.util.*;
-import static java.lang.System.*;
 
 public class ShipTest {
     public static void main( String args[] ) {

@@ -25,15 +25,15 @@ public class Ship extends MovingThing {
 	 * Constructors
 	 */
 	public Ship() {
-		this(0, 0, 50, 50,  0);
+		this(200,200,100,100,5);
 	}
 
 	public Ship(int x, int y) {
-		this(x, y, 50, 50, 0);
+		this(x,y,100,100,5);
 	}
 
 	public Ship(int x, int y, int s) {
-		this(x, y, 50, 50, s);
+		this(x,y,100,100,s);
 	}
 
 	public Ship(int x, int y, int w, int h, int s) {
@@ -69,11 +69,12 @@ public class Ship extends MovingThing {
 	 * @param direction
 	 */
 	public void move(String direction) {
-		if(direction.equals("LEFT")) {
-			setX(getX()-getSpeed());
-		} else {
-			setX(getX()+getSpeed());
-		}
+		if (direction.equals("LEFT")) {setX(getX()-getSpeed());}
+		if (direction.equals("RIGHT")) {setX(getX()+getSpeed());} 
+		if (direction.equals("UP")) {setY(getY()-getSpeed());}
+		if (direction.equals("DOWN")) {setY(getY()+getSpeed());}
+		// add functionality later
+		if (direction.equals("SPACE")) {}
 	}
 
 	/**
