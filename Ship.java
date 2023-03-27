@@ -12,6 +12,9 @@ import java.net.URL;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.awt.Graphics;
+
 
 public class Ship extends MovingThing {
 

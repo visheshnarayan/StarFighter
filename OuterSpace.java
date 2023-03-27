@@ -28,6 +28,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	private Ship ship;
 	private Alien alienOne;
 	private Alien alienTwo;
+	private Ammo ammo;
 	// private AlienHorde horde;
 	// private Bullets shots;
 
@@ -44,6 +45,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		ship = new Ship(350, 400, 100, 100, 3);
 		alienOne = new Alien(100, 100, 100, 100, 3);
 		alienTwo = new Alien(600, 100, 100, 100, 3);
+		ammo = new Ammo(10, 10, 4);
 
 		keys = Stream.of(new Object[][] {
 			{"LEFT", false}, 
@@ -87,6 +89,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 
 		// objects
 		ship.draw(window);
+		ammo.draw(window);
 		alienOne.draw(window);
 		alienTwo.draw(window);
 
