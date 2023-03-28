@@ -16,6 +16,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.swing.*;
@@ -28,7 +29,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	private Ship ship;
 	private Alien alienOne;
 	private Alien alienTwo;
-	private Ammo ammo;
+	private ArrayList<Ammo>  bullets; 
 	// private AlienHorde horde;
 	// private Bullets shots;
 
@@ -45,7 +46,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		ship = new Ship(350, 400, 100, 100, 3);
 		alienOne = new Alien(100, 100, 100, 100, 3);
 		alienTwo = new Alien(600, 100, 100, 100, 3);
-		ammo = new Ammo(10, 10, 4);
+		bullets = new ArrayList<Ammo>();
 
 		keys = Stream.of(new Object[][] {
 			{"LEFT", false}, 
@@ -54,6 +55,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 			{"DOWN", false}, 
 			{"SPACE", false}, 
 		}).collect(Collectors.toMap(data -> (String) data[0], data -> (Boolean) data[1]));
+
 		this.addKeyListener(this);
 		new Thread(this).start();
 		setVisible(true);
@@ -70,26 +72,14 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	 * paint: graphically moves object
 	 */
 	public void paint(Graphics window) {
-		//sets up the double buffering to make the game animation nice and smooth
-		// Graphics2D twoDGraph = (Graphics2D) window;
-
-		//take a snap shop of the current screen and same it as an image
-		//that is the exact same width and height as the current screen
 		if (back == null) {back = (BufferedImage) (createImage(getWidth(),getHeight()));}
 
 		//create a graphics reference to the back ground image
 		//we will draw all changes on the background image
 		Graphics graphToBack = back.createGraphics();
 
-		/**
-		 * !!!! DO NO USE twoDGraph.drawImage() !!!!
-		 * This function draws a black screen over the ship
-		 */
-		// twoDGraph.drawImage(back, null, 0, 0);
-
 		// objects
 		ship.draw(window);
-		ammo.draw(window);
 		alienOne.draw(window);
 		alienTwo.draw(window);
 
@@ -116,6 +106,24 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 			ship.move("DOWN");
 			System.out.println("Down movement");
 		}
+		if (keys.get("SPACE")) {
+			bullets.add(new Ammo(ship.getX()+50, ship.getY(), 4));
+		}
+
+		/**
+		 * update bullet positions
+		 */
+		for (int i = 0; i < bullets.size(); i++) {
+			Ammo ammo = bullets.get(i);
+			if (ammo.getY() > 0) {
+				ammo.moveAndDraw(window);
+
+			} else {
+				ammo.remove(window);
+				bullets.remove(i);
+			}
+		}
+
 		//add in collision detection to see if Bullets hit the Aliens and if Bullets hit the Ship
 	}
 
