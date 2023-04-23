@@ -62,11 +62,11 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 			{"UP", false}, 
 			{"DOWN", false}, 
 			{"SPACE", false}, 
-			{"W", false},
-			{"A", false},
-			{"S", false},
-			{"D", false}
 		}).collect(Collectors.toMap(data -> (String) data[0], data -> (Boolean) data[1]));
+		// {"W", false},
+		// 	{"A", false},
+		// 	{"S", false},
+		// 	{"D", false}
 		time = System.currentTimeMillis();
 		this.addKeyListener(this);
 		new Thread(this).start();
@@ -107,13 +107,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		if (keys.get("UP")) {ship.move("UP");}
 		if (keys.get("DOWN")) {ship.move("DOWN");}
 		if (keys.get("SPACE")) {bullets.add(new Ammo(ship.getX()+50, ship.getY(), 4));}
-
-		// if (keys.get("W")) {alien.move("UP");}
-		// if (keys.get("A")) {alien.move("LEFT");}
-		// if (keys.get("S")) {alien.move("DOWN");}
-		// if (keys.get("D")) {alien.move("RIGHT");}
-		// if (keys.get("W")) {horde.moveEmAll();}
-
+		
 		/**
 		 * update bullet positions
 		 */
@@ -128,24 +122,10 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 			}
 		}
 
-		if ((System.currentTimeMillis()-time)%20000==0) {horde.moveEmAll();}
-		// if ((System.currentTimeMillis()-time)%20000==0) {
-		// 	List<Alien> aliens = horde.getList();
-		// 	for (int i = 0; i < horde.getSize(); i++) {
-		// 		aliens.get(i).move("DOWN");
-		// 	}
-		// }
-		// if ((System.currentTimeMillis()-time)%20000==0) {System.out.println("horde movement");}
-
-		// timer = new Timer();
-		// timer.scheduleAtFixedRate(new TimerTask() {
-		// 	@Override
-		// 	public void run() {
-		// 		// Thread.sleep(20, ABORT);
-		// 		horde.moveEmAll();
-		// 		System.out.println("Horde moved");
-		// 	}
-		// }, 20*1000, 20*1000);
+		/**
+		 * horde movement every 20 seconds
+		 */
+		if ((System.currentTimeMillis()-time)%20000==0) {horde.moveEmAll(window);}
 		//add in collision detection to see if Bullets hit the Aliens and if Bullets hit the Ship
 	}
 
@@ -159,10 +139,6 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		if (e.getKeyCode() == KeyEvent.VK_UP) {keys.replace("UP", true);}
 		if (e.getKeyCode() == KeyEvent.VK_DOWN) {keys.replace("DOWN", true);}
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {keys.replace("SPACE", true);}
-		if (e.getKeyCode() == KeyEvent.VK_W) {keys.replace("W", true);}
-		if (e.getKeyCode() == KeyEvent.VK_A) {keys.replace("A", true);}
-		if (e.getKeyCode() == KeyEvent.VK_S) {keys.replace("S", true);}
-		if (e.getKeyCode() == KeyEvent.VK_D) {keys.replace("D", true);}
 		repaint();
 	}
 
@@ -175,10 +151,6 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		if (e.getKeyCode() == KeyEvent.VK_UP) {keys.replace("UP", false);}
 		if (e.getKeyCode() == KeyEvent.VK_DOWN) {keys.replace("DOWN", false);}
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {keys.replace("SPACE", false);}
-		if (e.getKeyCode() == KeyEvent.VK_W) {keys.replace("W", false);}
-		if (e.getKeyCode() == KeyEvent.VK_A) {keys.replace("A", false);}
-		if (e.getKeyCode() == KeyEvent.VK_S) {keys.replace("S", false);}
-		if (e.getKeyCode() == KeyEvent.VK_D) {keys.replace("D", false);}
 		repaint();
 	}
 

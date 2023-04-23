@@ -77,6 +77,17 @@ public class Alien extends MovingThing {
 	}
 
 	/**
+	 * move: moves direction given string indicating position
+	 * @param direction
+	 */
+	public void move(String direction, Graphics window) {
+		if (direction.equals("LEFT")) {moveAndDraw(window);}
+		if (direction.equals("RIGHT")) {moveAndDraw(window);} 
+		if (direction.equals("UP")) {moveAndDraw(window);}
+		if (direction.equals("DOWN")) {moveAndDraw(window);}
+	}
+
+	/**
 	 * draw: graphically moves object
 	 * @param window
 	 */
@@ -88,28 +99,28 @@ public class Alien extends MovingThing {
 	 * moveAndDraw: graphically moves object
 	 * @param window
 	 */
-	// public void moveAndDraw(Graphics window) {
-	// 	// old loc 
-	// 	draw(window);
+	public void moveAndDraw(Graphics window) {
+		// old loc 
+		draw(window);
 
-	// 	// remove 
-	// 	remove(window);
+		// remove 
+		remove(window);
 
-	// 	// // new loc
-	// 	// move("DOWN");
+		// new loc
+		move("DOWN");
 
-	// 	// draw at new loc
-	// 	draw(window);
-	// }
+		// draw at new loc
+		draw(window);
+	}
 
 	/**
 	 * remove: removes bullet from current position
 	 * @param window
 	 */
-	// private void remove(Graphics window) {
-	// 	window.setColor(Color.BLACK);
-	// 	window.fillRect(getX(), getY(), getWidth(), getHeight());
-	// }
+	private void remove(Graphics window) {
+		window.setColor(Color.BLACK);
+		window.fillRect(getX(), getY(), getWidth(), getHeight());
+	}
 
 	/**
 	 * toString: return string when object is printed

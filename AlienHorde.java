@@ -12,8 +12,6 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-
-// TODO: make alien disapear from previous position
 public class AlienHorde {
 	/**
 	 * private vars
@@ -31,7 +29,7 @@ public class AlienHorde {
 		aliens = new ArrayList<Alien>();
 		for (int i = 0; i < size; i++) {
 			updateN();
-			add(new Alien(n*20, 10, 20, 20, 10));
+			add(new Alien(n*20, 10, 20, 20, 20));
 		}
 		System.out.println("horde deployed");
 	}
@@ -49,17 +47,16 @@ public class AlienHorde {
 	 * @param window
 	 */
 	public void drawEmAll(Graphics window) {
-		// for (Alien alien: aliens) {alien.draw(window);}
 		for (int i = 0; i < aliens.size(); i++) {aliens.get(i).draw(window);}
 	}
 
 	/**
 	 * moveEmAll: moves whole horde down 
 	 */
-	public void moveEmAll() {
+	public void moveEmAll(Graphics window) {
 		// for (Alien alien: aliens) {alien.move("DOWN");}
 		for (int i = 0; i < aliens.size(); i++) {
-			aliens.get(i).move("DOWN");
+			aliens.get(i).move("DOWN", window);
 			try {Thread.sleep(1);} catch (Exception e) {}
 		}
 	}
