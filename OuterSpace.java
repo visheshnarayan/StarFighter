@@ -15,9 +15,11 @@ import java.awt.Canvas;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.rmi.server.ObjID;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -33,10 +35,12 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	private Ship ship;
 	private ArrayList<Ammo>  bullets; 
 	private AlienHorde horde;
-	// private Alien alien;
 	// private Bullets shots;
 
 	private Map<String, Boolean> keys;
+
+	// location of alien, alien ID
+	private Map<Integer[], Integer> alienLoc;
 	private BufferedImage back;
 
 	private Timer timer; 
@@ -51,8 +55,6 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		// initialize other vars when ready
 		setBackground(Color.black);
 		ship = new Ship(350, 400, 50, 50, 1);
-		// horde = new AlienHorde(4);
-		// alien = new Alien(400, 10, 100, 100, 1);
 		horde = new AlienHorde(10);
 		bullets = new ArrayList<Ammo>();
 
@@ -63,10 +65,16 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 			{"DOWN", false}, 
 			{"SPACE", false}, 
 		}).collect(Collectors.toMap(data -> (String) data[0], data -> (Boolean) data[1]));
-		// {"W", false},
-		// 	{"A", false},
-		// 	{"S", false},
-		// 	{"D", false}
+		alienLoc = new HashMap<Integer[], Integer>();
+		HashMap<Integer, Alien> aliens = horde.getMap();
+		for (int i = 0; i < horde.getSize(); i++) {
+			alienLoc.put(new Integer[] {
+					aliens.get(i).getX(),
+					aliens.get(i).getY()
+				},  i
+			);
+		}
+
 		time = System.currentTimeMillis();
 		this.addKeyListener(this);
 		new Thread(this).start();
@@ -106,26 +114,44 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		if (keys.get("RIGHT")) {ship.move("RIGHT");}
 		if (keys.get("UP")) {ship.move("UP");}
 		if (keys.get("DOWN")) {ship.move("DOWN");}
-		if (keys.get("SPACE")) {bullets.add(new Ammo(ship.getX()+50, ship.getY(), 4));}
+		if (keys.get("SPACE")) {bullets.add(new Ammo(ship.getX()+50, ship.getY(), 1));}
 		
 		/**
-		 * update bullet positions
+		 * bullets
 		 */
 		for (int i = 0; i < bullets.size(); i++) {
+
+			// update bullet position
 			Ammo ammo = bullets.get(i);
 			if (ammo.getY() > 0) {
 				ammo.moveAndDraw(window);
-
-			} else {
+			}
+			if (ammo.getY() == 0) {
 				ammo.remove(window);
 				bullets.remove(i);
+			}
+
+			// check for collision
+			Integer[] ammoLoc = new Integer[] {ammo.getX(), ammo.getY()};
+			if (alienLoc.containsKey(ammoLoc)) {
+				System.out.println("removing dead alien");
+				horde.removeDeadOnes(alienLoc.get(ammoLoc));
 			}
 		}
 
 		/**
-		 * horde movement every 20 seconds
+		 * aliens
 		 */
-		if ((System.currentTimeMillis()-time)%20000==0) {horde.moveEmAll(window);}
+		if ((System.currentTimeMillis()-time)%500==0) {horde.moveEmAll(window);}
+		HashMap<Integer, Alien> aliens = horde.getMap();
+		for (int i = 0; i < horde.getSize(); i++) {
+			alienLoc.put(new Integer[] {
+					aliens.get(i).getX(),
+					aliens.get(i).getY()
+				},  i
+			);
+		}
+
 		//add in collision detection to see if Bullets hit the Aliens and if Bullets hit the Ship
 	}
 

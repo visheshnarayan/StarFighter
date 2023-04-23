@@ -39,7 +39,6 @@ public class Ammo extends MovingThing {
 		try {
 			URL url = getClass().getResource("/images/bullet.png");
 			image = ImageIO.read(url);
-			System.out.println("bullet.png loaded in properly");
 		} catch(Exception e) {
 			System.out.println("bullet.png not loaded in properly");
 		}

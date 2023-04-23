@@ -81,10 +81,10 @@ public class Alien extends MovingThing {
 	 * @param direction
 	 */
 	public void move(String direction, Graphics window) {
-		if (direction.equals("LEFT")) {moveAndDraw(window);}
-		if (direction.equals("RIGHT")) {moveAndDraw(window);} 
-		if (direction.equals("UP")) {moveAndDraw(window);}
-		if (direction.equals("DOWN")) {moveAndDraw(window);}
+		if (direction.equals("LEFT")) {moveAndDraw(direction, window);}
+		if (direction.equals("RIGHT")) {moveAndDraw(direction, window);} 
+		if (direction.equals("UP")) {moveAndDraw(direction, window);}
+		if (direction.equals("DOWN")) {moveAndDraw(direction, window);}
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class Alien extends MovingThing {
 	 * moveAndDraw: graphically moves object
 	 * @param window
 	 */
-	public void moveAndDraw(Graphics window) {
+	public void moveAndDraw(String direction, Graphics window) {
 		// old loc 
 		draw(window);
 
@@ -107,7 +107,7 @@ public class Alien extends MovingThing {
 		remove(window);
 
 		// new loc
-		move("DOWN");
+		move(direction);
 
 		// draw at new loc
 		draw(window);
