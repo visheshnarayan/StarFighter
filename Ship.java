@@ -12,9 +12,6 @@ import java.net.URL;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.imageio.ImageIO;
-import java.awt.Color;
-import java.awt.Graphics;
-
 
 public class Ship extends MovingThing {
 
@@ -51,7 +48,6 @@ public class Ship extends MovingThing {
 		}
 	}
 
-
 	/**
 	 * setSpeed: sets speed given s
 	 * @param s
@@ -76,7 +72,6 @@ public class Ship extends MovingThing {
 		if (direction.equals("RIGHT")) {setX(getX()+getSpeed());} 
 		if (direction.equals("UP")) {setY(getY()-getSpeed());}
 		if (direction.equals("DOWN")) {setY(getY()+getSpeed());}
-		// add functionality later
 		if (direction.equals("SPACE")) {}
 	}
 

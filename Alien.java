@@ -9,6 +9,7 @@
  * -----------------------------------------------------------
  */
 import java.net.URL;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.imageio.ImageIO;
@@ -69,11 +70,10 @@ public class Alien extends MovingThing {
 	 * @param direction
 	 */
 	public void move(String direction) {
-		if(direction.equals("LEFT")) {
-			setX(getX()-getSpeed());
-		} else {
-			setX(getX()+getSpeed());
-		}
+		if (direction.equals("LEFT")) {setX(getX()-getSpeed());}
+		if (direction.equals("RIGHT")) {setX(getX()+getSpeed());} 
+		if (direction.equals("UP")) {setY(getY()-getSpeed());}
+		if (direction.equals("DOWN")) {setY(getY()+getSpeed());}
 	}
 
 	/**
@@ -83,6 +83,33 @@ public class Alien extends MovingThing {
 	public void draw(Graphics window) {
    		window.drawImage(image,getX(),getY(),getWidth(),getHeight(),null);
 	}
+
+	/**
+	 * moveAndDraw: graphically moves object
+	 * @param window
+	 */
+	// public void moveAndDraw(Graphics window) {
+	// 	// old loc 
+	// 	draw(window);
+
+	// 	// remove 
+	// 	remove(window);
+
+	// 	// // new loc
+	// 	// move("DOWN");
+
+	// 	// draw at new loc
+	// 	draw(window);
+	// }
+
+	/**
+	 * remove: removes bullet from current position
+	 * @param window
+	 */
+	// private void remove(Graphics window) {
+	// 	window.setColor(Color.BLACK);
+	// 	window.fillRect(getX(), getY(), getWidth(), getHeight());
+	// }
 
 	/**
 	 * toString: return string when object is printed
