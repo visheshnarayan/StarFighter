@@ -15,16 +15,11 @@ import java.awt.Canvas;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.rmi.server.ObjID;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import javax.swing.*;
 
 public class OuterSpace extends Canvas implements KeyListener, Runnable {
@@ -36,23 +31,16 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	private ArrayList<Ammo>  bullets; 
 	private AlienHorde horde;
 	// private Bullets shots;
-
 	private Map<String, Boolean> keys;
-
-	// location of alien, alien ID
-	private Map<Integer[], Integer> alienLoc;
+	private Map<int[], Integer> alienLoc;
 	private BufferedImage back;
-
-	private Timer timer; 
 	private long time;
 
-	// TODO: make bullets list -> queue (pop queue when a bullet reaches end)
 	/**
 	 * Constructor
 	 * @param par
 	 */
 	public OuterSpace(JFrame par) {
-		// initialize other vars when ready
 		setBackground(Color.black);
 		ship = new Ship(350, 400, 50, 50, 1);
 		horde = new AlienHorde(10);
@@ -65,10 +53,10 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 			{"DOWN", false}, 
 			{"SPACE", false}, 
 		}).collect(Collectors.toMap(data -> (String) data[0], data -> (Boolean) data[1]));
-		alienLoc = new HashMap<Integer[], Integer>();
+		alienLoc = new HashMap<int[], Integer>();
 		HashMap<Integer, Alien> aliens = horde.getMap();
 		for (int i = 0; i < horde.getSize(); i++) {
-			alienLoc.put(new Integer[] {
+			alienLoc.put(new int[] {
 					aliens.get(i).getX(),
 					aliens.get(i).getY()
 				},  i
@@ -101,7 +89,6 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		// objects
 		ship.draw(window);
 		horde.drawEmAll(window);
-		// alien.draw(window);
 
 		// background
 		graphToBack.setColor(Color.BLUE);
@@ -114,7 +101,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		if (keys.get("RIGHT")) {ship.move("RIGHT");}
 		if (keys.get("UP")) {ship.move("UP");}
 		if (keys.get("DOWN")) {ship.move("DOWN");}
-		if (keys.get("SPACE")) {bullets.add(new Ammo(ship.getX()+50, ship.getY(), 1));}
+		if (keys.get("SPACE")) {bullets.add(new Ammo(ship.getX()+20, ship.getY(), 1));}
 		
 		/**
 		 * bullets
@@ -131,11 +118,27 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 				bullets.remove(i);
 			}
 
-			// check for collision
-			Integer[] ammoLoc = new Integer[] {ammo.getX(), ammo.getY()};
-			if (alienLoc.containsKey(ammoLoc)) {
-				System.out.println("removing dead alien");
-				horde.removeDeadOnes(alienLoc.get(ammoLoc));
+			/**
+			 * HashMap {int[alien location]: alienID}
+			 * map lookup -> map.get(bulletLoc) => if look up works, bullet @alien -> pop alien from stack
+			 */
+			int[] ammoLoc = new int[] {ammo.getX(), ammo.getY()};
+			for (int[] arr: alienLoc.keySet()) {
+				if (collision(arr, ammoLoc)) {
+					System.out.println("collision with alien #" + alienLoc.get(arr));
+					horde.removeDeadOnes(alienLoc.get(arr), window);
+
+					// add new alien at random loc
+					horde.add(
+						new Alien(
+							(int) ((Math.random() * (700 - 100)) + 100),
+							(int) ((Math.random() * (300 - 10)) + 10),
+							horde.getLW(),
+							horde.getLW(),
+							horde.getLW()
+						), i
+					);
+				}
 			}
 		}
 
@@ -144,15 +147,14 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		 */
 		if ((System.currentTimeMillis()-time)%500==0) {horde.moveEmAll(window);}
 		HashMap<Integer, Alien> aliens = horde.getMap();
-		for (int i = 0; i < horde.getSize(); i++) {
-			alienLoc.put(new Integer[] {
-					aliens.get(i).getX(),
-					aliens.get(i).getY()
-				},  i
+		alienLoc = new HashMap<int[], Integer>();
+		for (int id: aliens.keySet()) {
+			alienLoc.put(new int[] {
+					aliens.get(id).getX(),
+					aliens.get(id).getY()
+				},  id
 			);
 		}
-
-		//add in collision detection to see if Bullets hit the Aliens and if Bullets hit the Ship
 	}
 
 
@@ -196,5 +198,18 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
          	}
       	} catch(Exception e) {}
   	}
-}
 
+	/**
+	 * collision: checks if bullet is inside alien hit box
+	 * @param alienLoc
+	 * @param bulletLoc
+	 * @return boolean
+	 */
+	private boolean collision(int[] alienLoc, int[] bulletLoc) {
+		// first check y level -> then x
+ 		if (alienLoc[1]!=bulletLoc[1]) {return false;} else {
+			if (bulletLoc[0]>=alienLoc[0] && bulletLoc[0]<=alienLoc[0]+30) {return true;}
+			return false;
+		}
+	}
+}

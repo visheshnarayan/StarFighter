@@ -9,9 +9,7 @@
  * -----------------------------------------------------------
  */
 import java.awt.Graphics;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class AlienHorde {
 	/**
@@ -19,7 +17,6 @@ public class AlienHorde {
 	 */
 	private HashMap<Integer, Alien> aliens;
 	private int n;
-	private int rowSize;
 	private int lw;
 
 	// true -> right movement, false -> left movement
@@ -31,7 +28,6 @@ public class AlienHorde {
 	 */
 	public AlienHorde(int size) {
 		this.aliens = new HashMap<Integer, Alien>();
-		this.rowSize = size;
 		this.n = 1;
 		this.leftRight = true;
 		this.lw = 30;
@@ -55,7 +51,7 @@ public class AlienHorde {
 	 * @param window
 	 */
 	public void drawEmAll(Graphics window) {
-		for (int i = 0; i < aliens.size(); i++) {aliens.get(i).draw(window);}
+		for (int id: aliens.keySet()) {aliens.get(id).draw(window);}
 	}
 
 	/**
@@ -63,26 +59,34 @@ public class AlienHorde {
 	 * note: leading alien is always index 0
 	 */
 	public void moveEmAll(Graphics window) {
-		// if last alien at edge: shift down and left
-		if (aliens.get(getSize()-1).getX()>450) {
-			for (int i = 0; i < aliens.size(); i++) {aliens.get(i).move("DOWN", window);}
-			leftRight = false;
-		}
+		if (getSize()!=0) {
+			// if last alien at edge: shift down and left
+			// aliens.keySet().toArray(new Integer[getSize()])[getSize()-1] -> last alien 
+			if (aliens.get(
+				aliens.keySet().toArray(new Integer[getSize()])[getSize()-1]
+			).getX()>450) {
+				for (int id: aliens.keySet()) {aliens.get(id).move("DOWN", window);}
+				leftRight = false;
+			}
 
-		// if first alien at edge: shift down and right
-		if (aliens.get(0).getX()<=50) {
-			for (int i = 0; i < aliens.size(); i++) {aliens.get(i).move("DOWN", window);}
-			leftRight = true;
-		}
+			// if first alien at edge: shift down and right
+			// aliens.keySet().toArray(new Integer[getSize()])[0] -> first alien 
+			if (aliens.get(
+				aliens.keySet().toArray(new Integer[getSize()])[0]
+			).getX()<=50) {
+				for (int id: aliens.keySet()) {aliens.get(id).move("DOWN", window);}
+				leftRight = true;
+			}
 
-		// if right movement: shift right
-		if (leftRight) {
-			for (int i = 0; i < aliens.size(); i++) {aliens.get(i).move("RIGHT", window);}
-		}
+			// if right movement: shift right
+			if (leftRight) {
+				for (int id: aliens.keySet()) {aliens.get(id).move("RIGHT", window);}
+			}
 
-		// if left movement: shift left
-		if (!leftRight) {
-			for (int i = 0; i < aliens.size(); i++) {aliens.get(i).move("LEFT", window);}
+			// if left movement: shift left
+			if (!leftRight) {
+				for (int id: aliens.keySet()) {aliens.get(id).move("LEFT", window);}
+			}
 		}
 	}
 
@@ -90,7 +94,8 @@ public class AlienHorde {
 	 * removeDeadOnes: removes dead aliens 
 	 * @param shots
 	 */
-	public void removeDeadOnes(int alienID) {
+	public void removeDeadOnes(int alienID, Graphics window) {
+		aliens.get(alienID).remove(window);
 		aliens.remove(alienID);
 	}
 
@@ -108,6 +113,14 @@ public class AlienHorde {
 	 */
 	public int getSize() {
 		return aliens.size();
+	}
+
+	/**
+	 * getLW: returns length/width of alien.jpg (square image)
+	 * @return
+	 */
+	public int getLW() {
+		return this.lw;
 	}
 
 	/**

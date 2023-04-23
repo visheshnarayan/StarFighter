@@ -43,7 +43,6 @@ public class Alien extends MovingThing {
 		try {
 			URL url = getClass().getResource("/images/alien.jpg");
 			image = ImageIO.read(url);
-			System.out.println("Alien.png loaded in properly");
 		} catch(Exception e) {
 			System.out.println("Alien.png not loaded in properly");
 		}
@@ -117,7 +116,7 @@ public class Alien extends MovingThing {
 	 * remove: removes bullet from current position
 	 * @param window
 	 */
-	private void remove(Graphics window) {
+	public void remove(Graphics window) {
 		window.setColor(Color.BLACK);
 		window.fillRect(getX(), getY(), getWidth(), getHeight());
 	}
