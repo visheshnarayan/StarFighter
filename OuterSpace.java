@@ -26,10 +26,8 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	
 	/**
 	 * private vars
-	 */
-	// TODO: replace bullets with shots -> just change name and data type and replace code blocks with methods 
+	 */ 
 	private Ship ship;
-	// private ArrayList<Ammo>  bullets; 
 	private AlienHorde horde;
 	private Bullets bullets;
 	private Map<String, Boolean> keys;
