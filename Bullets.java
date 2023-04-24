@@ -8,12 +8,7 @@
  * Creates Bullet class as a collection for Ammo object
  * -----------------------------------------------------------
  */
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Window;
-import java.io.File;
-import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.List;
 

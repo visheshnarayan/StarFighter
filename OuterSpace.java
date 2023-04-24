@@ -27,10 +27,11 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	/**
 	 * private vars
 	 */
+	// TODO: replace bullets with shots -> just change name and data type and replace code blocks with methods 
 	private Ship ship;
-	private ArrayList<Ammo>  bullets; 
+	// private ArrayList<Ammo>  bullets; 
 	private AlienHorde horde;
-	// private Bullets shots;
+	private Bullets bullets;
 	private Map<String, Boolean> keys;
 	private Map<int[], Integer> alienLoc;
 	private BufferedImage back;
@@ -44,7 +45,8 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		setBackground(Color.black);
 		ship = new Ship(350, 400, 50, 50, 1);
 		horde = new AlienHorde(10);
-		bullets = new ArrayList<Ammo>();
+		// bullets = new ArrayList<Ammo>();
+		bullets = new Bullets();
 
 		keys = Stream.of(new Object[][] {
 			{"LEFT", false}, 
@@ -89,6 +91,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		// objects
 		ship.draw(window);
 		horde.drawEmAll(window);
+		bullets.drawEmAll(window);
 
 		// background
 		graphToBack.setColor(Color.BLUE);
@@ -104,24 +107,15 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		if (keys.get("SPACE")) {bullets.add(new Ammo(ship.getX()+20, ship.getY(), 1));}
 		
 		/**
-		 * bullets
+		 * collision detection
 		 */
-		for (int i = 0; i < bullets.size(); i++) {
-
-			// update bullet position
-			Ammo ammo = bullets.get(i);
-			if (ammo.getY() > 0) {
-				ammo.moveAndDraw(window);
-			}
-			if (ammo.getY() == 0) {
-				ammo.remove(window);
-				bullets.remove(i);
-			}
-
+		bullets.moveEmAll(window);
+		for (int i = 0; i < bullets.getList().size(); i++) {
 			/**
 			 * HashMap {int[alien location]: alienID}
 			 * map lookup -> map.get(bulletLoc) => if look up works, bullet @alien -> pop alien from stack
 			 */
+			Ammo ammo = bullets.getList().get(i);
 			int[] ammoLoc = new int[] {ammo.getX(), ammo.getY()};
 			for (int[] arr: alienLoc.keySet()) {
 				if (collision(arr, ammoLoc)) {
