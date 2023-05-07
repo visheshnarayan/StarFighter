@@ -132,9 +132,9 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 					int x = (int) ((Math.random() * (700 - 100)) + 100);
 					int y = (int) ((Math.random() * (300 - 150)) + 150);
 
-					// round down 10 to lock alien into grid 
-					x = x - (x % 10);
-					y = y - (y % 10);
+					// round down 30 to lock alien into grid 
+					x = x - (x % horde.getLW());
+					y = y - (y % horde.getLW());
 					horde.add(
 						new Alien(
 							x, 
@@ -160,6 +160,21 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 					aliens.get(id).getY()
 				},  id
 			);
+
+			// if alien goes below 400 pixels 
+			// if (aliens.get(id).getY() > 400) {
+			// 	horde.removeDeadOnes(id, window);
+			// }
+		}
+
+		// remove any that have updated loc below y = 400 -> seperate for i loop avoids "java.util.ConcurrentModificationException"
+		// for (int id: aliens.keySet()) {
+		for (int i = 0; i < aliens.size(); i++) {
+			int id = aliens.keySet().toArray(new Integer[aliens.size()])[i];
+			if (aliens.get(id).getY() > 400) {
+				horde.removeDeadOnes(id, window);
+				score--;
+			}
 		}
 
 		/**

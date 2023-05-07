@@ -29,7 +29,7 @@ public class AlienHorde {
 		this.lw = 30;
 		for (int i = 0; i < size; i++) {
 			updateN();
-			add(new Alien(n*lw, 60, lw, lw, lw), i);
+			add(new Alien(n*lw, 350, lw, lw, lw), i);
 		}
 		System.out.println("horde deployed");
 	}
@@ -68,6 +68,7 @@ public class AlienHorde {
 			 */
 			/*==========================================*/
 			for (Alien al: aliens.values()) {
+				// horizontal check
 				if (al.getX() < 30 || al.getX() > 700) {
 					al.move("DOWN", window);
 					if (al.getX() < 30) {
