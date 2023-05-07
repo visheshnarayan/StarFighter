@@ -13,8 +13,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 import javax.imageio.ImageIO;
 
+// methods marked @implementation are required for implementation but do not have any function in Score.java
 public class Score extends MovingThing {
-
 	/**
 	 * private vars
 	 */
@@ -39,29 +39,21 @@ public class Score extends MovingThing {
 	}
 
 	/**
-	 * setSpeed: sets speed given s
-	 * @param s
+	 * @implementation
 	 */
 	public void setSpeed(int s) {}
 
 	/**
-	 * getSpeed: returns speed
+	 * @implementation
 	 */
 	public int getSpeed() {
 	   return 0;
 	}
 
 	/**
-	 * move: moves direction given string indicating position
-	 * @param direction
+	 * @implementation
 	 */
-	public void move(String direction) {
-		if (direction.equals("LEFT")) {setX(getX()-getSpeed());}
-		if (direction.equals("RIGHT")) {setX(getX()+getSpeed());} 
-		if (direction.equals("UP")) {setY(getY()-getSpeed());}
-		if (direction.equals("DOWN")) {setY(getY()+getSpeed());}
-		if (direction.equals("SPACE")) {}
-	}
+	public void move(String direction) {}
 
 	/**
 	 * draw: graphically moves object
