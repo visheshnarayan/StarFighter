@@ -19,9 +19,6 @@ public class AlienHorde {
 	private int n;
 	private int lw;
 
-	// true -> right movement, false -> left movement
-	private boolean leftRight;
-
 	/**
 	 * Constructors
 	 * @param size
@@ -29,11 +26,10 @@ public class AlienHorde {
 	public AlienHorde(int size) {
 		this.aliens = new HashMap<Integer, Alien>();
 		this.n = 1;
-		this.leftRight = true;
 		this.lw = 30;
 		for (int i = 0; i < size; i++) {
 			updateN();
-			add(new Alien(n*lw, 10, lw, lw, lw), i);
+			add(new Alien(n*lw, 60, lw, lw, lw), i);
 		}
 		System.out.println("horde deployed");
 	}
@@ -60,32 +56,30 @@ public class AlienHorde {
 	 */
 	public void moveEmAll(Graphics window) {
 		if (getSize()!=0) {
-			// if last alien at edge: shift down and left
-			// aliens.keySet().toArray(new Integer[getSize()])[getSize()-1] -> last alien 
-			if (aliens.get(
-				aliens.keySet().toArray(new Integer[getSize()])[getSize()-1]
-			).getX()>450) {
-				for (int id: aliens.keySet()) {aliens.get(id).move("DOWN", window);}
-				leftRight = false;
-			}
-
-			// if first alien at edge: shift down and right
-			// aliens.keySet().toArray(new Integer[getSize()])[0] -> first alien 
-			if (aliens.get(
-				aliens.keySet().toArray(new Integer[getSize()])[0]
-			).getX()<=50) {
-				for (int id: aliens.keySet()) {aliens.get(id).move("DOWN", window);}
-				leftRight = true;
-			}
-
-			// if right movement: shift right
-			if (leftRight) {
-				for (int id: aliens.keySet()) {aliens.get(id).move("RIGHT", window);}
-			}
-
-			// if left movement: shift left
-			if (!leftRight) {
-				for (int id: aliens.keySet()) {aliens.get(id).move("LEFT", window);}
+			/*=============== New system ===============*/
+			/**
+			 * for each alien
+			 * 		if alien out of bounds (too left or too right)
+			 * 			move down 
+			 * 			push back into bounds
+			 * 			change direction of movement if left or right 0
+			 * 		else
+			 * 			moveAlien(direction of alien)
+			 */
+			/*==========================================*/
+			for (Alien al: aliens.values()) {
+				if (al.getX() < 30 || al.getX() > 700) {
+					al.move("DOWN", window);
+					if (al.getX() < 30) {
+						al.move("RIGHT", window);
+						al.setDireaction("RIGHT");
+					} else {
+						al.move("LEFT", window);
+						al.setDireaction("LEFT");
+					}
+				} else {
+					al.move(al.getDireaction(), window);
+				}
 			}
 		}
 	}

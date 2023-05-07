@@ -21,6 +21,7 @@ public class Alien extends MovingThing {
 	 */
 	private int speed;
 	private Image image;
+	private String direction;
 
 	/**
 	 * Constructors
@@ -40,6 +41,7 @@ public class Alien extends MovingThing {
 	public Alien(int x, int y, int w, int h, int s) {
 		super(x, y, w, h);
 		speed = s;
+		direction = "RIGHT";
 		try {
 			URL url = getClass().getResource("/images/alien.jpg");
 			image = ImageIO.read(url);
@@ -62,6 +64,21 @@ public class Alien extends MovingThing {
 	 */
 	public int getSpeed() {
 	   return speed;
+	}
+
+	/**
+	 * getDirection: returns direction alien should be moving according to horde
+	 * @param direction
+	 */
+	public void setDireaction(String direction) {
+		this.direction = direction;	
+	}
+
+	/**
+	 * getDirection: returns direction alien should be moving according to horde
+	 */
+	public String getDireaction() {
+		return direction;
 	}
 
 	/**

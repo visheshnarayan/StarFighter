@@ -17,13 +17,11 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
 
 public class OuterSpace extends Canvas implements KeyListener, Runnable {
-	
 	/**
 	 * private vars
 	 */ 
@@ -34,6 +32,8 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	private Map<int[], Integer> alienLoc;
 	private BufferedImage back;
 	private long time;
+	private int score;
+	private Score[] scoreElements;
 
 	/**
 	 * Constructor
@@ -41,10 +41,17 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	 */
 	public OuterSpace(JFrame par) {
 		setBackground(Color.black);
+		score = 0;
 		ship = new Ship(350, 400, 50, 50, 1);
 		horde = new AlienHorde(10);
-		// bullets = new ArrayList<Ammo>();
 		bullets = new Bullets();
+
+		scoreElements = new Score [12];
+		for (int i = 0; i < scoreElements.length - 2; i++) {
+			scoreElements[i] = new Score(10, 10, 40, 50, Integer.toString(i));
+		}
+		scoreElements[10] = new Score(10, 10, 100, 50, "score");
+		scoreElements[11] = new Score(650, 10, 140, 50, "starfighter");
 
 		keys = Stream.of(new Object[][] {
 			{"LEFT", false}, 
@@ -92,8 +99,6 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		bullets.drawEmAll(window);
 
 		// background
-		graphToBack.setColor(Color.BLUE);
-		graphToBack.drawString("StarFighter ", 25, 50 );
 		graphToBack.setColor(Color.BLACK);
 		graphToBack.fillRect(0,0,800,600);
 
@@ -112,23 +117,32 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 			/**
 			 * HashMap {int[alien location]: alienID}
 			 * map lookup -> map.get(bulletLoc) => if look up works, bullet @alien -> pop alien from stack
+			 * assign old id to new alien spanned
 			 */
 			Ammo ammo = bullets.getList().get(i);
 			int[] ammoLoc = new int[] {ammo.getX(), ammo.getY()};
 			for (int[] arr: alienLoc.keySet()) {
+				int id = alienLoc.get(arr);
 				if (collision(arr, ammoLoc)) {
-					System.out.println("collision with alien #" + alienLoc.get(arr));
-					horde.removeDeadOnes(alienLoc.get(arr), window);
+					System.out.println("collision with alien #" + id);
+					horde.removeDeadOnes(id, window);
 
 					// add new alien at random loc
+					// randint(min, max) = (int) (Math.random() * (max - min) + min)
+					int x = (int) ((Math.random() * (700 - 100)) + 100);
+					int y = (int) ((Math.random() * (300 - 150)) + 150);
+
+					// round down 10 to lock alien into grid 
+					x = x - (x % 10);
+					y = y - (y % 10);
 					horde.add(
 						new Alien(
-							(int) ((Math.random() * (700 - 100)) + 100),
-							(int) ((Math.random() * (300 - 10)) + 10),
+							x, 
+							y,
 							horde.getLW(),
 							horde.getLW(),
 							horde.getLW()
-						), i
+						), id
 					);
 				}
 			}
@@ -147,6 +161,16 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 				},  id
 			);
 		}
+
+		/**
+		 * score and texts
+		 */
+		// position "score" and "starfighter"
+		scoreElements[11].draw(window);
+		scoreElements[10].draw(window);
+
+		// draw score
+		drawScore(score, window);
 	}
 
 
@@ -200,8 +224,51 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	private boolean collision(int[] alienLoc, int[] bulletLoc) {
 		// first check y level -> then x
  		if (alienLoc[1]!=bulletLoc[1]) {return false;} else {
-			if (bulletLoc[0]>=alienLoc[0] && bulletLoc[0]<=alienLoc[0]+30) {return true;}
+			if (bulletLoc[0]>=alienLoc[0] && bulletLoc[0]<=alienLoc[0]+30) {
+				score++;
+				return true;
+			}
 			return false;
+		}
+	}
+
+	/**
+	 * drawScore: draws current score onto window
+	 * @param score
+	 * @param window
+	 */
+	private void drawScore(int score, Graphics window) {
+		int hundred = (int) (score/100);
+		int ten = (int) (score/10) - (hundred*10);
+		int one = (int) (score%10);
+		if (score < 10) {
+			// position 0
+			scoreElements[0].setX(scoreElements[10].getWidth()+10);
+			scoreElements[0].draw(window);
+
+			// position single digit score value
+			scoreElements[one].setX(scoreElements[0].getX()+scoreElements[0].getWidth()-10);
+			scoreElements[one].draw(window);
+		} else if (score < 100) {
+			// position first digit
+			scoreElements[ten].setX(scoreElements[10].getWidth()+10);
+			scoreElements[ten].draw(window);
+
+			// position second digit
+			scoreElements[one].setX(scoreElements[ten].getX()+scoreElements[0].getWidth()-10);
+			scoreElements[one].draw(window);
+		} else {
+			// position first digit
+			scoreElements[hundred].setX(scoreElements[10].getWidth()+10);
+			scoreElements[hundred].draw(window);
+
+			// position second digit
+			scoreElements[ten].setX(scoreElements[hundred].getX()+scoreElements[0].getWidth()-10);
+			scoreElements[ten].draw(window);
+
+			// position second digit
+			scoreElements[one].setX(scoreElements[ten].getX()+scoreElements[0].getWidth()-10);
+			scoreElements[one].draw(window);
 		}
 	}
 }
