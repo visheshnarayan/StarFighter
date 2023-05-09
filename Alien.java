@@ -130,7 +130,7 @@ public class Alien extends MovingThing {
 	}
 
 	/**
-	 * remove: removes bullet from current position
+	 * remove: removes alien from current position
 	 * @param window
 	 */
 	public void remove(Graphics window) {

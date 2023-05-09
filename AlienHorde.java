@@ -112,10 +112,18 @@ public class AlienHorde {
 
 	/**
 	 * getLW: returns length/width of alien.jpg (square image)
-	 * @return
+	 * @return lw
 	 */
 	public int getLW() {
 		return this.lw;
+	}
+
+	/**
+	 * getSpeed: returns current horde speed
+	 * @return speed
+	 */
+	public int getSpeed() {
+		return this.aliens.get(0).getSpeed();
 	}
 
 	/**

@@ -1,3 +1,5 @@
+// TODO: add replay game feature
+// TODO: CHECK FOR SCORE CHANGE NOT STRICT MODULUS 
 /**
  * -----------------------------------------------------------
  * @author Vishesh Narayan
@@ -10,13 +12,13 @@
  */
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Canvas;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
@@ -33,7 +35,10 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	private BufferedImage back;
 	private long time;
 	private int score;
-	private Score[] scoreElements;
+	private int last;
+	private int lives;
+	private ArrayList<Ship> livesShips;
+	private UIElements[] UIElements;
 
 	/**
 	 * Constructor
@@ -41,17 +46,30 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	 */
 	public OuterSpace(JFrame par) {
 		setBackground(Color.black);
-		score = 0;
+		score = 99;
+		// last used to check if score has changed so functions are not called in infinite loop
+		last = 0;
 		ship = new Ship(350, 400, 50, 50, 1);
 		horde = new AlienHorde(10);
 		bullets = new Bullets();
 
-		scoreElements = new Score [12];
-		for (int i = 0; i < scoreElements.length - 2; i++) {
-			scoreElements[i] = new Score(10, 10, 40, 50, Integer.toString(i));
+		UIElements = new UIElements [17];
+		for (int i = 0; i < UIElements.length - 2; i++) {
+			UIElements[i] = new UIElements(10, 10, 40, 50, Integer.toString(i));
 		}
-		scoreElements[10] = new Score(10, 10, 100, 50, "score");
-		scoreElements[11] = new Score(650, 10, 140, 50, "starfighter");
+		UIElements[10] = new UIElements(10, 10, 100, 50, "score");
+		UIElements[11] = new UIElements(650, 10, 140, 50, "starfighter");
+		UIElements[12] = new UIElements(250, 10, 140, 50, "lives");
+		UIElements[13] = new UIElements(330, 200, 140, 50, "life-1");
+		UIElements[14] = new UIElements(300, 200, 200, 100, "game_over");
+		UIElements[15] = new UIElements(300, 200, 200, 100, "ready");
+		UIElements[16] = new UIElements(330, 200, 140, 50, "life+1");
+
+		livesShips = new ArrayList<Ship>();
+		lives = 3;
+		for (int i = 1; i <= lives; i++) {
+			livesShips.add(new Ship((UIElements[12].getX()+UIElements[12].getWidth()-50)+i*ship.getWidth(), 10, 50, 50, 1));
+		}
 
 		keys = Stream.of(new Object[][] {
 			{"LEFT", false}, 
@@ -89,18 +107,10 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	public void paint(Graphics window) {
 		if (back==null) {back = (BufferedImage) (createImage(getWidth(),getHeight()));}
 
-		//create a graphics reference to the back ground image
-		//we will draw all changes on the background image
-		Graphics2D graphToBack = back.createGraphics();
-
 		// objects
 		ship.draw(window);
 		horde.drawEmAll(window);
 		bullets.drawEmAll(window);
-
-		// background
-		graphToBack.setColor(Color.BLACK);
-		graphToBack.fillRect(0,0,800,600);
 
 		// controls
 		if (keys.get("LEFT")) {ship.move("LEFT");}
@@ -124,6 +134,8 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 			for (int[] arr: alienLoc.keySet()) {
 				int id = alienLoc.get(arr);
 				if (collision(arr, ammoLoc)) {
+					score++;
+					last++;
 					System.out.println("collision with alien #" + id);
 					horde.removeDeadOnes(id, window);
 
@@ -154,38 +166,58 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		if ((System.currentTimeMillis()-time)%500==0) {horde.moveEmAll(window);}
 		HashMap<Integer, Alien> aliens = horde.getMap();
 		alienLoc = new HashMap<int[], Integer>();
-		for (int id: aliens.keySet()) {
+		for (int i = 0; i < aliens.size(); i++) {
+			// update alien locs 
+			int id = aliens.keySet().toArray(new Integer[aliens.size()])[i];
 			alienLoc.put(new int[] {
 					aliens.get(id).getX(),
 					aliens.get(id).getY()
 				},  id
 			);
 
-			// if alien goes below 400 pixels 
-			// if (aliens.get(id).getY() > 400) {
-			// 	horde.removeDeadOnes(id, window);
-			// }
-		}
-
-		// remove any that have updated loc below y = 400 -> seperate for i loop avoids "java.util.ConcurrentModificationException"
-		// for (int id: aliens.keySet()) {
-		for (int i = 0; i < aliens.size(); i++) {
-			int id = aliens.keySet().toArray(new Integer[aliens.size()])[i];
-			if (aliens.get(id).getY() > 400) {
-				horde.removeDeadOnes(id, window);
+			// check if alien hit ship OR alien went past bounds
+			if (collision(
+				new int[] {ship.getX(), ship.getY()},
+				new int[] {aliens.get(id).getX(), aliens.get(id).getY()}) || aliens.get(id).getY() > 400) {
+				// decrease score
+				System.out.println("ship hit!");
 				score--;
+				last++;
+
+				// pause and unpause to show 1 life is lost
+				removeLife(window);
+
+				horde.removeDeadOnes(id, window);
+				updateLives(false, window);
 			}
 		}
 
 		/**
-		 * score and texts
+		 * UI
 		 */
-		// position "score" and "starfighter"
-		scoreElements[11].draw(window);
-		scoreElements[10].draw(window);
+		// position "score" and "starfighter" and "lives"
+		UIElements[10].draw(window);
+		UIElements[11].draw(window);
+		UIElements[12].draw(window);
+
+		// draw in ships representing lives
+		for (Ship ship: livesShips) {ship.draw(window);}
 
 		// draw score
 		drawScore(score, window);
+
+		/**
+		 * mechanics
+		 */
+		if (checkEnd()) {
+			endGame(window);
+		}
+
+		// if not end then check if level update needed or new life needed
+		if (last!=0) {
+			checkPoints(window);
+			last = 0;
+		}
 	}
 
 
@@ -231,16 +263,15 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
   	}
 
 	/**
-	 * collision: checks if bullet is inside alien hit box
-	 * @param alienLoc
-	 * @param bulletLoc
+	 * collision: checks if location one and location 2 overlap in hit box
+	 * @param loc1 (object)
+	 * @param loc2 (target)
 	 * @return boolean
 	 */
-	private boolean collision(int[] alienLoc, int[] bulletLoc) {
+	private boolean collision(int[] loc1, int[] loc2) {
 		// first check y level -> then x
- 		if (alienLoc[1]!=bulletLoc[1]) {return false;} else {
-			if (bulletLoc[0]>=alienLoc[0] && bulletLoc[0]<=alienLoc[0]+30) {
-				score++;
+		if (!(loc2[1]+15>=loc1[1] && loc2[1]+15<=loc1[1]+30)) {return false;} else {
+			if (loc2[0]+15>=loc1[0] && loc2[0]+15<=loc1[0]+30) {
 				return true;
 			}
 			return false;
@@ -253,37 +284,162 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	 * @param window
 	 */
 	private void drawScore(int score, Graphics window) {
+		// incase score is less than 0 -> do nothing, game will end in following function calls 
+		if (score < 0) {return;}
+
+		// digits 
 		int hundred = (int) (score/100);
 		int ten = (int) (score/10) - (hundred*10);
 		int one = (int) (score%10);
 		if (score < 10) {
 			// position 0
-			scoreElements[0].setX(scoreElements[10].getWidth()+10);
-			scoreElements[0].draw(window);
+			UIElements[0].setX(UIElements[10].getWidth()+10);
+			UIElements[0].draw(window);
 
 			// position single digit score value
-			scoreElements[one].setX(scoreElements[0].getX()+scoreElements[0].getWidth()-10);
-			scoreElements[one].draw(window);
+			UIElements[one].setX(UIElements[0].getX()+UIElements[0].getWidth()-10);
+			UIElements[one].draw(window);
 		} else if (score < 100) {
 			// position first digit
-			scoreElements[ten].setX(scoreElements[10].getWidth()+10);
-			scoreElements[ten].draw(window);
+			UIElements[ten].setX(UIElements[10].getWidth()+10);
+			UIElements[ten].draw(window);
 
 			// position second digit
-			scoreElements[one].setX(scoreElements[ten].getX()+scoreElements[0].getWidth()-10);
-			scoreElements[one].draw(window);
+			UIElements[one].setX(UIElements[ten].getX()+UIElements[0].getWidth()-10);
+			UIElements[one].draw(window);
 		} else {
 			// position first digit
-			scoreElements[hundred].setX(scoreElements[10].getWidth()+10);
-			scoreElements[hundred].draw(window);
+			UIElements[hundred].setX(UIElements[10].getWidth()+10);
+			UIElements[hundred].draw(window);
 
 			// position second digit
-			scoreElements[ten].setX(scoreElements[hundred].getX()+scoreElements[0].getWidth()-10);
-			scoreElements[ten].draw(window);
+			UIElements[ten].setX(UIElements[hundred].getX()+UIElements[0].getWidth()-10);
+			UIElements[ten].draw(window);
 
 			// position second digit
-			scoreElements[one].setX(scoreElements[ten].getX()+scoreElements[0].getWidth()-10);
-			scoreElements[one].draw(window);
+			UIElements[one].setX(UIElements[ten].getX()+UIElements[0].getWidth()-10);
+			UIElements[one].draw(window);
 		}
+	}
+
+	/**
+	 * updateLives: updates lives player has by either increasing or decreasing based on bool=True or False
+	 * @param bool
+	 */
+	private void updateLives(boolean bool, Graphics window) {
+		if (bool) {
+			if (lives < 5) {
+				lives++;
+				livesShips.add(new Ship((livesShips.get(livesShips.size()-1)).getX()+ship.getWidth(), 10, 50, 50, 1));
+				UIElements[16].draw(window);
+				pause(3000);
+				UIElements[16].remove(window);
+			}
+		} else {
+			lives--;
+			livesShips.remove(lives);
+		}
+	}
+
+	/**
+	 * pause: pauses screen 
+	 * @param s
+	 */
+	private void pause(long s) {
+		try {Thread.sleep(s);} catch (Exception e) {}
+	}
+	
+	/**
+	 * removeLife: displays animation displaying one life has been lost
+	 * @param window
+	 */
+	private void removeLife(Graphics window) {
+		if (livesShips.size()!=0) {
+			Ship ship = livesShips.get(lives-1);
+			int shipX = ship.getX();
+			int shipY = ship.getY();
+			int shipW = ship.getWidth();
+			int shipH = ship.getHeight();
+
+			UIElements[13].draw(window);
+
+			pause(1000);
+			window.setColor(Color.BLACK);
+			window.fillRect(shipX, shipY, shipW, shipH);
+			
+			pause(300);
+			ship.draw(window);
+
+			pause(300);
+			window.setColor(Color.BLACK);
+			window.fillRect(shipX, shipY, shipW, shipH);
+
+			pause(300);
+			ship.draw(window);
+
+			pause(500);
+			window.setColor(Color.BLACK);
+			window.fillRect(shipX, shipY, shipW, shipH);
+			UIElements[13].remove(window);
+
+			pauseHorde();
+			window.setColor(Color.BLACK);
+			window.fillRect(shipX, shipY, shipW, shipH);
+
+			UIElements[15].draw(window);
+			pause(3000);
+
+			UIElements[15].remove(window);
+			resumeHorde();
+		}
+	}
+
+	/**
+	 * checkPoints: changes speed of aliens every 50 points and adds new life every 100 points
+	 */
+	private void checkPoints(Graphics window) {
+		if (score!=0 && score%50==0) {changeHordeSpeed();}
+		if (score!=0 && score%100==0) {updateLives(true, window);}
+	}
+
+	/**
+	 * checkEnd: checks if game is over through score or lives
+	 * @return boolean
+	 */
+	private boolean checkEnd() {
+		if (score < 0 || lives < 0) {
+			return true; 
+		}
+		return false;
+	}
+
+	/**
+	 * pauseHorde: pauses horde during intermissions
+	 */
+	private void pauseHorde() {
+		for (Alien al: horde.getMap().values()) {al.setSpeed(0);}
+	}
+
+	/**
+	 * resumeHorde: resumes horde after intermission
+	 */
+	private void resumeHorde() {
+		for (Alien al: horde.getMap().values()) {al.setSpeed(horde.getLW());}
+	}
+
+	/**
+	 * changeHordeSpeed: changes horde's speed by adding 30
+	 */
+	private void changeHordeSpeed() {
+		for (Alien al: horde.getMap().values()) {al.setSpeed(horde.getSpeed()+30);}
+	}
+
+	/**
+	 * endGame: starts ending game sequence and prompts player to play again
+	 * @param window
+	 */
+	private void endGame(Graphics window) {
+		pauseHorde();
+		UIElements[14].draw(window);
 	}
 }

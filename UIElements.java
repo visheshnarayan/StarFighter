@@ -9,12 +9,13 @@
  * -----------------------------------------------------------
  */
 import java.net.URL;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.imageio.ImageIO;
 
 // methods marked @implementation are required for implementation but do not have any function in Score.java
-public class Score extends MovingThing {
+public class UIElements extends MovingThing {
 	/**
 	 * private vars
 	 */
@@ -23,11 +24,11 @@ public class Score extends MovingThing {
 	/**
 	 * Constructors
 	 */
-	public Score() {
+	public UIElements() {
 		this(200,200,100,10, "0");
 	}
 
-	public Score(int x, int y, int w, int h, String num) {
+	public UIElements(int x, int y, int w, int h, String num) {
 		super(x, y, w, h);
 		try {
 			URL url = getClass().getResource("/images/"+num+".jpg");
@@ -61,6 +62,15 @@ public class Score extends MovingThing {
 	 */
 	public void draw(Graphics window) {
    		window.drawImage(image,getX(),getY(),getWidth(),getHeight(),null);
+	}
+
+	/**
+	 * remove: removes score element from current position
+	 * @param window
+	 */
+	public void remove(Graphics window) {
+		window.setColor(Color.BLACK);
+		window.fillRect(getX(), getY(), getWidth(), getHeight());
 	}
 
 	/**
