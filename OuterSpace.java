@@ -1,5 +1,3 @@
-// TODO: add replay game feature
-// TODO: CHECK FOR SCORE CHANGE NOT STRICT MODULUS 
 /**
  * -----------------------------------------------------------
  * @author Vishesh Narayan
@@ -33,6 +31,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	private Map<String, Boolean> keys;
 	private Map<int[], Integer> alienLoc;
 	private BufferedImage back;
+	private JFrame par;
 	private long time;
 	private int score;
 	private int last;
@@ -45,6 +44,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	 * @param par
 	 */
 	public OuterSpace(JFrame par) {
+		this.par = par; 
 		setBackground(Color.black);
 		score = 99;
 		// last used to check if score has changed so functions are not called in infinite loop
@@ -66,7 +66,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		UIElements[16] = new UIElements(330, 200, 140, 50, "life+1");
 
 		livesShips = new ArrayList<Ship>();
-		lives = 3;
+		lives = 1;
 		for (int i = 1; i <= lives; i++) {
 			livesShips.add(new Ship((UIElements[12].getX()+UIElements[12].getWidth()-50)+i*ship.getWidth(), 10, 50, 50, 1));
 		}
@@ -336,8 +336,10 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 				UIElements[16].remove(window);
 			}
 		} else {
-			lives--;
-			livesShips.remove(lives);
+			if (lives!=0) {
+				lives--;
+				livesShips.remove(lives);
+			}
 		}
 	}
 
