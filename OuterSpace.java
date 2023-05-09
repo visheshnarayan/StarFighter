@@ -424,14 +424,18 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	 * pauseHorde: pauses horde during intermissions
 	 */
 	private void pauseHorde() {
-		for (Alien al: horde.getMap().values()) {al.setSpeed(0);}
+		if (horde.getSize() > 0) {
+			for (Alien al: horde.getMap().values()) {al.setSpeed(0);}
+		}
 	}
 
 	/**
 	 * resumeHorde: resumes horde after intermission
 	 */
 	private void resumeHorde() {
-		for (Alien al: horde.getMap().values()) {al.setSpeed(horde.getLW());}
+		if (horde.getSize() > 0) {
+			for (Alien al: horde.getMap().values()) {al.setSpeed(horde.getLW());}
+		}
 	}
 
 	/**
