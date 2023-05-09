@@ -113,10 +113,10 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		bullets.drawEmAll(window);
 
 		// controls
-		if (keys.get("LEFT")) {ship.move("LEFT");}
-		if (keys.get("RIGHT")) {ship.move("RIGHT");}
-		if (keys.get("UP")) {ship.move("UP");}
-		if (keys.get("DOWN")) {ship.move("DOWN");}
+		if (keys.get("LEFT") && ship.getX() > 10) {ship.move("LEFT");}
+		if (keys.get("RIGHT") && ship.getX() < 700) {ship.move("RIGHT");}
+		if (keys.get("UP") && ship.getY() > 60) {ship.move("UP");}
+		if (keys.get("DOWN") && ship.getY() < 400) {ship.move("DOWN");}
 		if (keys.get("SPACE")) {bullets.add(new Ammo(ship.getX()+20, ship.getY(), 1));}
 		
 		/**
@@ -157,6 +157,11 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 						), id
 					);
 				}
+			}
+			// remove bullet if reaches top
+			if (ammo.getY() < 60) {
+				bullets.getList().remove(i);
+				ammo.remove(window);
 			}
 		}
 
