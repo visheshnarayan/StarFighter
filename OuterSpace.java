@@ -31,7 +31,6 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	private Map<String, Boolean> keys;
 	private Map<int[], Integer> alienLoc;
 	private BufferedImage back;
-	private JFrame par;
 	private long time;
 	private int score;
 	private int last;
@@ -44,7 +43,6 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	 * @param par
 	 */
 	public OuterSpace(JFrame par) {
-		this.par = par; 
 		setBackground(Color.black);
 		score = 0;
 		// last used to check if score has changed so functions are not called in infinite loop
@@ -53,7 +51,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		horde = new AlienHorde(10);
 		bullets = new Bullets();
 
-		UIElements = new UIElements [17];
+		UIElements = new UIElements [18];
 		for (int i = 0; i < 10; i++) {
 			UIElements[i] = new UIElements(10, 10, 40, 50, Integer.toString(i));
 		}
@@ -64,6 +62,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		UIElements[14] = new UIElements(300, 200, 200, 100, "game_over");
 		UIElements[15] = new UIElements(300, 200, 200, 100, "ready");
 		UIElements[16] = new UIElements(330, 200, 140, 50, "life+1");
+		UIElements[17] = new UIElements(300, 200, 200, 110, "speeding_up");
 
 		livesShips = new ArrayList<Ship>();
 		lives = 3;
@@ -116,7 +115,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		if (keys.get("LEFT") && ship.getX() > 10) {ship.move("LEFT");}
 		if (keys.get("RIGHT") && ship.getX() < 700) {ship.move("RIGHT");}
 		if (keys.get("UP") && ship.getY() > 60) {ship.move("UP");}
-		if (keys.get("DOWN") && ship.getY() < 400) {ship.move("DOWN");}
+		if (keys.get("DOWN") && ship.getY() < 450) {ship.move("DOWN");}
 		if (keys.get("SPACE")) {bullets.add(new Ammo(ship.getX()+20, ship.getY(), 1));}
 		
 		/**
@@ -331,6 +330,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	 * updateLives: updates lives player has by either increasing or decreasing based on bool=True or False
 	 * @param bool
 	 */
+	// TODO: fix so game ends if lives == 0
 	private void updateLives(boolean bool, Graphics window) {
 		if (bool) {
 			if (lives < 5) {
@@ -341,10 +341,10 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 				UIElements[16].remove(window);
 			}
 		} else {
-			if (lives!=0) {
+			if (lives>0) {
 				lives--;
 				livesShips.remove(lives);
-			}
+			} else {endGame(window);}
 		}
 	}
 
@@ -405,7 +405,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	 * checkPoints: changes speed of aliens every 50 points and adds new life every 100 points
 	 */
 	private void checkPoints(Graphics window) {
-		if (score!=0 && score%50==0) {changeHordeSpeed();}
+		if (score!=0 && score%50==0) {changeHordeSpeed(window);}
 		if (score!=0 && score%100==0) {updateLives(true, window);}
 	}
 
@@ -437,8 +437,16 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	/**
 	 * changeHordeSpeed: changes horde's speed by adding 30
 	 */
-	private void changeHordeSpeed() {
+	private void changeHordeSpeed(Graphics window) {
 		for (Alien al: horde.getMap().values()) {al.setSpeed(horde.getSpeed()+30);}
+		pause(2000);
+
+		UIElements[17].draw(window);
+		pause(2000);
+
+		window.setColor(Color.BLACK);
+		window.fillRect(UIElements[17].getX(), UIElements[17].getY(), UIElements[17].getWidth(), UIElements[17].getHeight());
+		pause(100);
 	}
 
 	/**
