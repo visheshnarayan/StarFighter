@@ -46,7 +46,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 	public OuterSpace(JFrame par) {
 		this.par = par; 
 		setBackground(Color.black);
-		score = 99;
+		score = 0;
 		// last used to check if score has changed so functions are not called in infinite loop
 		last = 0;
 		ship = new Ship(350, 400, 50, 50, 1);
@@ -54,7 +54,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		bullets = new Bullets();
 
 		UIElements = new UIElements [17];
-		for (int i = 0; i < UIElements.length - 2; i++) {
+		for (int i = 0; i < 10; i++) {
 			UIElements[i] = new UIElements(10, 10, 40, 50, Integer.toString(i));
 		}
 		UIElements[10] = new UIElements(10, 10, 100, 50, "score");
@@ -66,7 +66,7 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable {
 		UIElements[16] = new UIElements(330, 200, 140, 50, "life+1");
 
 		livesShips = new ArrayList<Ship>();
-		lives = 1;
+		lives = 3;
 		for (int i = 1; i <= lives; i++) {
 			livesShips.add(new Ship((UIElements[12].getX()+UIElements[12].getWidth()-50)+i*ship.getWidth(), 10, 50, 50, 1));
 		}
